@@ -147,7 +147,7 @@ class Interpreter(object):
         expr : facttor ((MUL | DIV) factor)*
         factor : INTEGER
         """
-        result = self.term()
+        result = self.factor()
     
         while self.current_token.type in (PLUS, MINUS):
             token = self.current_token
