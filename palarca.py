@@ -2,7 +2,7 @@
 # 
 # EOF (end-of-file) token is used to indicate that 
 # there is no more input left for lexical analysis
-INTEGER, PLUS, MINUS, MUL, DIV, EOF = 'INTEGER', 'PLUS', 'MINUS', 'MUL', 'DIV', 'EOF'
+INTEGER, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, EOF = 'INTEGER', 'PLUS', 'MINUS', 'MUL', 'DIV', 'LPAREN', 'RPAREN', 'EOF'
 
 
 class Token(object):
@@ -18,6 +18,7 @@ class Token(object):
         Examples:
 
         Token(INTEGER, 3)
+        Token(PLUS, '+')
         Token(MUL'*')
         """
 
@@ -90,7 +91,15 @@ class Lexer(object):
             if self.current_char == '/':
                 self.advance()
                 return Token(DIV, '/')
-                
+            
+            if self.current_char == '(':
+                self.advance()
+                return Token(LPAREN, '(')
+
+            if self.current_char == ')':
+                self.advance()
+                return Token(RPAREN, ')')
+               
             self.error()
             
         return Token(EOF, None)
@@ -115,13 +124,16 @@ class Interpreter(object):
             self.error()
 
     def factor(self):
-        """Return an INTEGER token value.
-
-        factor : INTEGER
-        """
+        """factor : INTERGER | LPAREN expr RPAREN """
         token = self.current_token
-        self.eat(INTEGER)
-        return token.value
+        if token.type == INTEGER:
+            self.eat(INTEGER)
+            return token.value
+        elif token.type == LPAREN:
+            self.eat(LPAREN)
+            result = self.expr()
+            self.eat(RPAREN)
+            return result
 
     def term(self):
         """term : factor ((MUL | DIV) factor)*"""
@@ -136,18 +148,19 @@ class Interpreter(object):
                 self.eat(DIV)
                 result = result // self.factor()
 
-            return result
+        return result
 
     def expr(self):
         """Arithmetic expression parser / interpreter.
 
-        calc> 14 + 2 * 3 - 6 / 2
+        calc> 7 + 3 * (10 / (12 / (3 + 1) - 1))
+        22
         
         expr : factor ((PLUS | MINUS) term)*
         expr : facttor ((MUL | DIV) factor)*
-        factor : INTEGER
+        factor : INTEGER | LPAREN expr RPAREN
         """
-        result = self.factor()
+        result = self.term()
     
         while self.current_token.type in (PLUS, MINUS):
             token = self.current_token
