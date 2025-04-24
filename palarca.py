@@ -76,6 +76,7 @@ class Lexer:
 
         return Token(EOF, None)
 
+
 class AST(object):
     pass
 
@@ -93,12 +94,17 @@ class Num(AST):
 class Parser:
     def __init__(self, lexer):
         self.lexer = lexer
+        # set current token to the first token taken from the input
         self.current_token = self.lexer.get_next_token()
 
     def error(self):
         raise Exception('Invalid syntax')
 
     def eat(self, token_type):
+        # compare the current token type with the passed token
+        # type and if they match then "eat" the current token
+        # and assign the next token to the self.current_token,
+        # otherwise raise an exception
         if self.current_token.type == token_type:
             self.current_token = self.lexer.get_next_token()
         else:
@@ -144,6 +150,7 @@ class Parser:
     def parse(self):
         return self.expr()
 
+
 class NodeVisitor:
     def visit(self, node):
         method_name = 'visit_' + type(node).__name__
@@ -174,14 +181,19 @@ class Interpreter(NodeVisitor):
         tree = self.parser.parse()
         return self.visit(tree)
 
+
 def main():
     while True:
         try:
-            text = input('calc> ')
-        except EOFError:
+            try:
+                text = raw_input('spi> ')
+            except NameError: # Python3
+                text = input(' spi> ')
+        except EOFErorr:
             break
         if not text:
             continue
+        
         lexer = Lexer(text)
         parser = Parser(lexer)
         interpreter = Interpreter(parser)
