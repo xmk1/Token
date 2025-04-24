@@ -76,9 +76,7 @@ class Lexer:
 
         return Token(EOF, None)
 
-
-# AST Node Definitions
-class AST:
+class AST(object):
     pass
 
 class BinOp(AST):
@@ -92,8 +90,6 @@ class Num(AST):
         self.token = token
         self.value = token.value
 
-
-# Parser Class
 class Parser:
     def __init__(self, lexer):
         self.lexer = lexer
@@ -148,8 +144,6 @@ class Parser:
     def parse(self):
         return self.expr()
 
-
-# Node Visitor
 class NodeVisitor:
     def visit(self, node):
         method_name = 'visit_' + type(node).__name__
@@ -159,8 +153,6 @@ class NodeVisitor:
     def generic_visit(self, node):
         raise Exception(f'No visit_{type(node).__name__} method')
 
-
-# Interpreter using Visitor pattern
 class Interpreter(NodeVisitor):
     def __init__(self, parser):
         self.parser = parser
@@ -182,8 +174,6 @@ class Interpreter(NodeVisitor):
         tree = self.parser.parse()
         return self.visit(tree)
 
-
-# Main driver
 def main():
     while True:
         try:
