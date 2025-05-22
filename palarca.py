@@ -562,7 +562,6 @@ def main():
                     {wrieln('y = ', y); }
                 END. {Part10}
                 """
-
-
+    
 if __name__ == '__main__':
     main()
